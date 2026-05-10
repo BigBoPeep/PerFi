@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { format } from "date-fns";
-
-interface Transaction {
-  _id: string;
-  userID: string;
-  amount: number;
-  description: string;
-  date: string;
-}
+import { format, parseISO } from "date-fns";
+import { useSettings } from "../context/SettingsContext";
+import { formatCurrency } from "../modules/currency";
+import type { TransactionsProps } from "../types/transaction";
 
 export default function Transactions({
   transactions,
-  loading,
+  isLoading,
   error,
-}: {
-  transactions: Transaction[];
-  loading: boolean;
-  error: string;
-}): React.JSX.Element {
-  if (loading)
+}: TransactionsProps): React.ReactNode {
+  const { settings } = useSettings();
+
+  if (isLoading)
     return (
       <div>
         <>Loading...</>
       </div>
     );
+
   if (error)
     return (
       <div>
@@ -32,11 +25,30 @@ export default function Transactions({
       </div>
     );
 
+  if (transactions.length === 0)
+    return (
+      <div>
+        <>No transactions yet...</>
+      </div>
+    );
+
   return (
-    <div>
+    <ul>
       {transactions.map((trans) => (
-        <div>{format(trans.date, "")}</div>
+        <li key={trans._id}>
+          <span>
+            {settings
+              ? format(parseISO(trans.date), settings.dateFormat)
+              : trans.date}
+          </span>
+          <span>{trans.description}</span>
+          <span>
+            {settings
+              ? formatCurrency(trans.amount, settings.currency)
+              : trans.amount}
+          </span>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

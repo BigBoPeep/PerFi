@@ -45,6 +45,21 @@ export const handler: Handler = async (event, context) => {
         return jsonResponse(201, newTransaction);
       }
 
+      case "DELETE": {
+        const { id } = event.queryStringParameters || {};
+
+        if (!id)
+          return jsonResponse(400, { error: "Transaction ID is required" });
+
+        const transaction = await TransactionModel.findOne({ _id: id, userID });
+
+        if (!transaction)
+          return jsonResponse(404, { error: "Transaction not found" });
+
+        await TransactionModel.deleteOne({ _id: id });
+        return jsonResponse(200, { message: "Transaction deleted" });
+      }
+
       default: {
         return jsonResponse(405, { error: "Method not allowed" });
       }

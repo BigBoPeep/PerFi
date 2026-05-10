@@ -1,27 +1,15 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { fetchUserSettings, updateUserSettings } from "../services/api";
-import type { ReactNode } from "react";
+import type {
+  UserSettings,
+  SettingsContext,
+  SettingsProviderProps,
+} from "../types/settings";
 
-interface UserSettings {
-  _id: string;
-  userID: string;
-  dateFormat: string;
-  currency: string;
-  createdAt: string;
-  updatedAt: string;
-}
+const SettingsContext = createContext<SettingsContext | null>(null);
 
-interface SettingsContextType {
-  settings: UserSettings | null;
-  isLoading: boolean;
-  error: string | null;
-  updateSettings: (updates: Partial<UserSettings>) => Promise<void>;
-}
-
-const SettingsContext = createContext<SettingsContextType | null>(null);
-
-export const SettingsProvider = ({ children }: { children: ReactNode }) => {
+export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
