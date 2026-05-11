@@ -5,7 +5,7 @@ import type {
   UserSettings,
   SettingsContext,
   SettingsProviderProps,
-} from "../types/settings";
+} from "../../shared/types/settings";
 
 const SettingsContext = createContext<SettingsContext | null>(null);
 

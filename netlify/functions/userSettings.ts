@@ -1,7 +1,9 @@
-import { Handler } from "@netlify/functions";
+import type { Handler } from "@netlify/functions";
 import { verifyToken } from "../lib/verifyToken";
 import { connectDB } from "../lib/connectDB";
 import { UserSettingsModel } from "../lib/models";
+import { USER_SETTINGS_PATCH_KEYS } from "../../shared/types/settings";
+import type { UserSettingsPatch } from "../../shared/types/settings";
 
 export const handler: Handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -31,10 +33,10 @@ export const handler: Handler = async (event, context) => {
       case "PATCH": {
         const body = JSON.parse(event.body || "{}");
 
-        const allowedFields = ["dateFormat", "currency"];
-
         const updates = Object.fromEntries(
-          Object.entries(body).filter(([key]) => allowedFields.includes(key)),
+          Object.entries(body).filter(([key]) =>
+            USER_SETTINGS_PATCH_KEYS.includes(key as keyof UserSettingsPatch),
+          ),
         );
 
         if (Object.keys(updates).length === 0) {

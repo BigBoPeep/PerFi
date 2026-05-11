@@ -14,6 +14,18 @@ export interface NewTransaction {
   date?: string;
 }
 
+export interface TransactionPatch {
+  amount?: number;
+  description?: string;
+  date?: string;
+}
+
+export const TRANSACTION_PATCH_KEYS: (keyof TransactionPatch)[] = [
+  "amount",
+  "date",
+  "description",
+];
+
 export interface TransactionsProps {
   transactions: Transaction[];
   isLoading: boolean;
@@ -31,4 +43,5 @@ export interface UseTransactions {
   balance: number;
   addTransaction: (data: NewTransaction) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
+  updateTransaction: (id: string, updates: TransactionPatch) => Promise<void>;
 }

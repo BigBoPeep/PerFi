@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { format, parseISO } from "date-fns";
 import { useSettings } from "../context/SettingsContext";
 import { formatCurrency } from "../modules/currency";
-import type { TransactionsProps } from "../types/transaction";
+import type { TransactionsProps } from "../../shared/types/transaction";
 
 export default function Transactions({
   transactions,

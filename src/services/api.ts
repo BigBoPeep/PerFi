@@ -1,6 +1,9 @@
 import type { GetTokenSilentlyOptions } from "@auth0/auth0-react";
-import type { NewTransaction } from "../types/transaction";
-import type { UserSettingsPatch } from "../types/settings";
+import type {
+  NewTransaction,
+  TransactionPatch,
+} from "../../shared/types/transaction";
+import type { UserSettingsPatch } from "../../shared/types/settings";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -44,6 +47,20 @@ export const deleteTransaction = async (getToken: GetToken, id: string) => {
     headers: await buildHeaders(getToken),
   });
   if (!res.ok) throw new Error("Failed to delete transaction");
+  return res.json();
+};
+
+export const updateTransaction = async (
+  getToken: GetToken,
+  id: string,
+  updates: TransactionPatch,
+) => {
+  const res = await fetch(`${BASE_URL}/transactions?id=${id}`, {
+    method: "PATCH",
+    headers: await buildHeaders(getToken),
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error("Failed to update transaction");
   return res.json();
 };
 

@@ -1,7 +1,9 @@
-import { Handler } from "@netlify/functions";
+import type { Handler } from "@netlify/functions";
 import { verifyToken } from "../lib/verifyToken";
 import { TransactionModel } from "../lib/models";
 import { connectDB } from "../lib/connectDB";
+import { TRANSACTION_PATCH_KEYS } from "../../shared/types/transaction";
+import type { TransactionPatch } from "../../shared/types/transaction";
 
 export const handler: Handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -58,6 +60,35 @@ export const handler: Handler = async (event, context) => {
 
         await TransactionModel.deleteOne({ _id: id });
         return jsonResponse(200, { message: "Transaction deleted" });
+      }
+
+      case "PATCH": {
+        const { id } = event.queryStringParameters || {};
+
+        if (!id)
+          return jsonResponse(400, { error: "Transaction ID is required" });
+
+        const body = JSON.parse(event.body || "{}");
+
+        const updates = Object.fromEntries(
+          Object.entries(body).filter(([key]) =>
+            TRANSACTION_PATCH_KEYS.includes(key as keyof TransactionPatch),
+          ),
+        );
+
+        if (Object.keys(updates).length === 0)
+          return jsonResponse(400, { error: "No valid fields provided" });
+
+        const updated = await TransactionModel.findOneAndUpdate(
+          { _id: id, userID },
+          { $set: updates },
+          { new: true },
+        );
+
+        if (!updated)
+          return jsonResponse(400, { error: "Transaction not found" });
+
+        return jsonResponse(200, updated);
       }
 
       default: {

@@ -4,12 +4,14 @@ import {
   fetchTransactions,
   createTransaction,
   deleteTransaction as deleteTransactionApi,
+  updateTransaction as updateTransactionApi,
 } from "../services/api";
 import type {
   Transaction,
   UseTransactions,
   NewTransaction,
-} from "../types/transaction";
+  TransactionPatch,
+} from "../../shared/types/transaction";
 
 export const useTransactions = (accountID?: string): UseTransactions => {
   const { getAccessTokenSilently } = useAuth0();
@@ -60,6 +62,15 @@ export const useTransactions = (accountID?: string): UseTransactions => {
     }
   };
 
+  const updateTransaction = async (id: string, updates: TransactionPatch) => {
+    try {
+      await updateTransactionApi(getAccessTokenSilently, id, updates);
+      refetch();
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
   return {
     transactions,
     balance,
@@ -67,5 +78,6 @@ export const useTransactions = (accountID?: string): UseTransactions => {
     error,
     addTransaction,
     deleteTransaction,
+    updateTransaction,
   };
 };

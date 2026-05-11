@@ -12,6 +12,11 @@ export interface UserSettingsPatch {
   currency?: string;
 }
 
+export const USER_SETTINGS_PATCH_KEYS: (keyof UserSettingsPatch)[] = [
+  "dateFormat",
+  "currency",
+];
+
 export interface SettingsContext {
   settings: UserSettings | null;
   isLoading: boolean;
