@@ -1,10 +1,17 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { fetchUserSettings, updateUserSettings } from "../services/api";
 import type {
   UserSettings,
   SettingsContext,
   SettingsProviderProps,
+  UserSettingsPatch,
 } from "../../shared/types/settings";
 
 const SettingsContext = createContext<SettingsContext | null>(null);
@@ -16,10 +23,15 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchSettings = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await fetchUserSettings(getAccessTokenSilently);
         setSettings(data);
       } catch (err: any) {
@@ -28,17 +40,22 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
         setIsLoading(false);
       }
     };
+
     fetchSettings();
   }, [isAuthenticated]);
 
-  const updateSettings = async (updates: Partial<UserSettings>) => {
-    try {
-      const data = await updateUserSettings(getAccessTokenSilently, updates);
-      setSettings(data);
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
+  const updateSettings = useCallback(
+    async (updates: UserSettingsPatch) => {
+      try {
+        setError(null);
+        const data = await updateUserSettings(getAccessTokenSilently, updates);
+        setSettings(data);
+      } catch (err: any) {
+        setError(err.message);
+      }
+    },
+    [getAccessTokenSilently],
+  );
 
   return (
     <SettingsContext.Provider

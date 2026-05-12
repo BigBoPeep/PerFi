@@ -6,12 +6,17 @@ import type {
 import type { UserSettingsPatch } from "../../shared/types/settings";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const AUTH0_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE;
 
 type GetToken = (options?: GetTokenSilentlyOptions) => Promise<string>;
 
 const buildHeaders = async (getToken: GetToken): Promise<HeadersInit> => ({
   "Content-Type": "application/json",
-  Authorization: `Bearer ${await getToken()}`,
+  Authorization: `Bearer ${await getToken({
+    authorizationParams: {
+      audience: AUTH0_AUDIENCE,
+    },
+  })}`,
 });
 
 export const fetchTransactions = async (

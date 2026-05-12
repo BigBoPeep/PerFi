@@ -24,7 +24,7 @@ export const handler: Handler = async (event, context) => {
         const settings = await UserSettingsModel.findOneAndUpdate(
           { userID },
           { $setOnInsert: { userID } },
-          { upsert: true, new: true },
+          { upsert: true, returnDocument: "after" },
         );
 
         return jsonResponse(200, settings);
@@ -46,7 +46,7 @@ export const handler: Handler = async (event, context) => {
         const updated = await UserSettingsModel.findOneAndUpdate(
           { userID },
           { $set: updates },
-          { new: true },
+          { returnDocument: "after" },
         );
 
         return jsonResponse(200, updated);

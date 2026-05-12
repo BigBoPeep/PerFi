@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+@layer base {
+  button {
+    @apply px-2 py-0.5 rounded-md outline cursor-pointer;
+  }
+}

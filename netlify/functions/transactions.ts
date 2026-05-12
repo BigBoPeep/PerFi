@@ -82,7 +82,7 @@ export const handler: Handler = async (event, context) => {
         const updated = await TransactionModel.findOneAndUpdate(
           { _id: id, userID },
           { $set: updates },
-          { new: true },
+          { returnDocument: "after" },
         );
 
         if (!updated)
