@@ -27,3 +27,14 @@ export interface SettingsContext {
 export interface SettingsProviderProps {
   children: React.ReactNode;
 }
+
+export interface LocalSettings {
+  sortField: "date" | "amount" | "description" | "location";
+  sortOrder: "asc" | "desc" | "rand";
+}
+
+export interface LocalSettingsContext {
+  localSettings: LocalSettings;
+  updateLocalSettings: (updates: Partial<LocalSettings>) => void;
+  resetLocalSettings: () => void;
+}

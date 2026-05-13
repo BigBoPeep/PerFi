@@ -5,6 +5,7 @@ export interface Transaction {
   amount: number;
   description: string;
   date: string;
+  location?: string;
 }
 
 export interface NewTransaction {
@@ -34,6 +35,7 @@ export interface TransactionsProps {
 
 export interface TransactionControlsProps {
   addTransaction: (data: NewTransaction) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
 }
 
 export interface UseTransactions {

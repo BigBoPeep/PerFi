@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { SquareUserRound, Loader } from "lucide-react";
+import { SquareUserRound, Circle, LoaderCircle, Loader } from "lucide-react";
 import { User } from "@auth0/auth0-react";
+import LoadingSpinner from "../LoadingSpinner";
 
 export default function UserAvatar({
   user,
   isLoading,
+  className,
 }: {
   user: User | undefined;
   isLoading: boolean;
+  className?: string;
 }) {
   const [imgError, setImgError] = useState(false);
 
@@ -16,8 +19,9 @@ export default function UserAvatar({
   }, [user?.picture]);
 
   const image = () => {
-    if (isLoading) return <Loader />;
-    if (!user || !user.picture || imgError) return <SquareUserRound />;
+    if (isLoading) return <LoadingSpinner />;
+    if (!user || !user.picture || imgError)
+      return <SquareUserRound className="w-full h-full opacity-50" />;
     return (
       <img
         src={user.picture}
@@ -29,6 +33,11 @@ export default function UserAvatar({
   };
 
   return (
-    <div className="w-8 h-8 place-items-center content-center">{image()}</div>
+    <div
+      className={`w-10 h-10 place-items-center content-center 
+      outline rounded-md overflow-hidden ${className}`}
+    >
+      {image()}
+    </div>
   );
 }

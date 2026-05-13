@@ -1,7 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    @apply text-0;
+  }
+
   button {
     @apply px-2 py-0.5 rounded-md outline cursor-pointer;
   }
+}
+
+@theme {
+  --text--1: clamp(0.7rem, 0.24vi + 0.65rem, 0.84rem);
+  --text-0: clamp(0.88rem, 0.42vi + 0.79rem, 1.13rem);
+  --text-1: clamp(1.09rem, 0.68vi + 0.96rem, 1.5rem);
+  --text-2: clamp(1.37rem, 1.05vi + 1.16rem, 2rem);
+  --text-3: clamp(1.71rem, 1.59vi + 1.39rem, 2.66rem);
+  --text-4: clamp(2.14rem, 2.36vi + 1.66rem, 3.55rem);
+  --text-5: clamp(2.67rem, 3.44vi + 1.98rem, 4.73rem);
+  --default-font-family: "Nunito Sans", var(--font-sans);
 }

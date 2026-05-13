@@ -6,6 +6,7 @@ import {
   deleteTransaction as deleteTransactionApi,
   updateTransaction as updateTransactionApi,
 } from "../services/api";
+import { useLocalSettings } from "../context/LocalSettingsContext";
 import type {
   Transaction,
   UseTransactions,
@@ -19,6 +20,7 @@ export const useTransactions = (accountID?: string): UseTransactions => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [trigger, setTrigger] = useState(0);
+  const { localSettings } = useLocalSettings();
 
   useEffect(() => {
     const load = async () => {
@@ -36,6 +38,32 @@ export const useTransactions = (accountID?: string): UseTransactions => {
 
     load();
   }, [accountID, trigger]);
+
+  const sortedTransactions = useMemo(() => {
+    return [...transactions].sort((a, b) => {
+      const dir =
+        localSettings.sortOrder === "asc"
+          ? 1
+          : localSettings.sortOrder === "desc"
+            ? -1
+            : Math.random() >= 0.5
+              ? 1
+              : -1;
+
+      switch (localSettings.sortField) {
+        case "amount":
+          return (a.amount - b.amount) * dir;
+        case "description":
+        case "location":
+          return a.description.localeCompare(b.description) * dir;
+        case "date":
+        default:
+          return (
+            (new Date(a.date).getTime() - new Date(b.date).getTime()) * dir
+          );
+      }
+    });
+  }, [transactions, localSettings.sortField, localSettings.sortOrder]);
 
   const balance = useMemo(
     () => transactions.reduce((sum, t) => sum + t.amount, 0),
@@ -72,7 +100,7 @@ export const useTransactions = (accountID?: string): UseTransactions => {
   };
 
   return {
-    transactions,
+    transactions: sortedTransactions,
     balance,
     isLoading,
     error,

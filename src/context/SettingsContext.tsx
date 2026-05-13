@@ -9,12 +9,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { fetchUserSettings, updateUserSettings } from "../services/api";
 import type {
   UserSettings,
-  SettingsContext,
+  SettingsContext as ContextType,
   SettingsProviderProps,
   UserSettingsPatch,
 } from "../../shared/types/settings";
 
-const SettingsContext = createContext<SettingsContext | null>(null);
+const SettingsContext = createContext<ContextType | null>(null);
 
 export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
