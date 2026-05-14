@@ -4,10 +4,19 @@ const transactionSchema = new mongoose.Schema({
   userID: { type: String, required: true },
   accountID: { type: String, required: true },
   amount: { type: Number, required: true },
-  description: { type: String, required: true },
+  description: { type: String },
   date: { type: Date, default: Date.now },
   location: { type: String },
 });
+
+const accountsSchema = new mongoose.Schema(
+  {
+    userID: { type: String, required: true },
+    name: { type: String, required: true },
+    type: { type: String, required: true },
+  },
+  { timestamps: true },
+);
 
 const userSettingsSchema = new mongoose.Schema(
   {
@@ -25,3 +34,6 @@ export const TransactionModel =
 export const UserSettingsModel =
   mongoose.models.UserSettings ||
   mongoose.model("UserSettings", userSettingsSchema);
+
+export const AccountModel =
+  mongoose.models.Accounts || mongoose.model("Accounts", accountsSchema);

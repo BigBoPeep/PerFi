@@ -4,6 +4,11 @@ import type {
   TransactionPatch,
 } from "../../shared/types/transaction";
 import type { UserSettingsPatch } from "../../shared/types/settings";
+import type {
+  Account,
+  NewAccount,
+  AccountPatch,
+} from "../../shared/types/account";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const AUTH0_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE;
@@ -79,13 +84,55 @@ export const fetchUserSettings = async (getToken: GetToken) => {
 
 export const updateUserSettings = async (
   getToken: GetToken,
+  id: string,
   updates: UserSettingsPatch,
 ) => {
-  const res = await fetch(`${BASE_URL}/userSettings`, {
+  const res = await fetch(`${BASE_URL}/userSettings?id=${id}`, {
     method: "PATCH",
     headers: await buildHeaders(getToken),
     body: JSON.stringify(updates),
   });
   if (!res.ok) throw new Error("Failed to update settings");
+  return res.json();
+};
+
+export const fetchAccounts = async (getToken: GetToken) => {
+  const res = await fetch(`${BASE_URL}/accounts`, {
+    headers: await buildHeaders(getToken),
+  });
+  if (!res.ok) throw new Error("Failed to fetch accounts");
+  return res.json() as Promise<Account[]>;
+};
+
+export const createAccount = async (getToken: GetToken, data: NewAccount) => {
+  const res = await fetch(`${BASE_URL}/accounts`, {
+    method: "POST",
+    headers: await buildHeaders(getToken),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create account");
+  return res.json() as Promise<Account>;
+};
+
+export const updateAccount = async (
+  getToken: GetToken,
+  id: string,
+  updates: AccountPatch,
+) => {
+  const res = await fetch(`${BASE_URL}/accounts?id=${id}`, {
+    method: "PATCH",
+    headers: await buildHeaders(getToken),
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error("Failed to update account");
+  return res.json() as Promise<Account>;
+};
+
+export const deleteAccount = async (getToken: GetToken, id: string) => {
+  const res = await fetch(`${BASE_URL}/accounts?id=${id}`, {
+    method: "DELETE",
+    headers: await buildHeaders(getToken),
+  });
+  if (!res.ok) throw new Error("Failed to delete account");
   return res.json();
 };

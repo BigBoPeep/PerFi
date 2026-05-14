@@ -23,12 +23,18 @@ export const CURRENCY_OPTS = [
 export type DateFormat = (typeof DATE_FORMAT_OPTS)[number]["value"];
 export type Currency = (typeof CURRENCY_OPTS)[number]["value"];
 
-export const TRANSACTION_SORT_OPTS: DropdownOpt[] = [
+export const TRANSACTION_SORT_FIELD_OPTS: DropdownOpt[] = [
   { label: "Date", value: "date" },
   { label: "Amount", value: "amount" },
   { label: "Location", value: "location" },
   { label: "Description", value: "description" },
 ] as const;
+
+export const TRANSACTION_SORT_ORDER_OPTS: DropdownOpt[] = [
+  { label: "Descending", value: "desc" },
+  { label: "Ascending", value: "asc" },
+  { label: "Random", value: "rand" },
+];
 
 export const USER_MENU_LIST_OPTS: MenuOption[] = [
   { kind: "internal", label: "Home", icon: House, to: "/" },

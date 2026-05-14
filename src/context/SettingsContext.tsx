@@ -45,10 +45,14 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   }, [isAuthenticated]);
 
   const updateSettings = useCallback(
-    async (updates: UserSettingsPatch) => {
+    async (id: string, updates: UserSettingsPatch) => {
       try {
         setError(null);
-        const data = await updateUserSettings(getAccessTokenSilently, updates);
+        const data = await updateUserSettings(
+          getAccessTokenSilently,
+          id,
+          updates,
+        );
         setSettings(data);
       } catch (err: any) {
         setError(err.message);

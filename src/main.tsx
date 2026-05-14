@@ -10,6 +10,7 @@ import { SettingsProvider } from "./context/SettingsContext";
 import { LocalSettingsProvider } from "./context/LocalSettingsContext";
 import MainLayout from "./components/layouts/MainLayout";
 import Dashboard from "./components/Dashboard";
+import { ConfirmModalProvider } from "./context/ConfirmModalContext";
 
 const Auth0ProviderWithNavigate = ({
   children,
@@ -43,14 +44,16 @@ createRoot(document.getElementById("root")!).render(
     <Auth0ProviderWithNavigate>
       <SettingsProvider>
         <LocalSettingsProvider>
-          <Routes>
-            <Route element={<MainLayout />}>
-              <Route index element={<Home />} />
-              <Route element={<RouteUser />}>
-                <Route path="dashboard" element={<Dashboard />} />
+          <ConfirmModalProvider>
+            <Routes>
+              <Route element={<MainLayout />}>
+                <Route index element={<Home />} />
+                <Route element={<RouteUser />}>
+                  <Route path="dashboard" element={<Dashboard />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
+            </Routes>
+          </ConfirmModalProvider>
         </LocalSettingsProvider>
       </SettingsProvider>
     </Auth0ProviderWithNavigate>

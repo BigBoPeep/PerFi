@@ -3,7 +3,7 @@ export interface Transaction {
   userID: string;
   accountID: string;
   amount: number;
-  description: string;
+  description?: string;
   date: string;
   location?: string;
 }
@@ -11,20 +11,23 @@ export interface Transaction {
 export interface NewTransaction {
   accountID: string;
   amount: number;
-  description: string;
+  description?: string;
   date?: string;
+  location?: string;
 }
 
 export interface TransactionPatch {
   amount?: number;
   description?: string;
   date?: string;
+  location?: string;
 }
 
 export const TRANSACTION_PATCH_KEYS: (keyof TransactionPatch)[] = [
   "amount",
   "date",
   "description",
+  "location",
 ];
 
 export interface TransactionsProps {

@@ -21,7 +21,7 @@ export interface SettingsContext {
   settings: UserSettings | null;
   isLoading: boolean;
   error: string | null;
-  updateSettings: (updates: Partial<UserSettings>) => Promise<void>;
+  updateSettings: (id: string, updates: Partial<UserSettings>) => Promise<void>;
 }
 
 export interface SettingsProviderProps {

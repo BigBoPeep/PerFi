@@ -1,9 +1,9 @@
 import type { Handler } from "@netlify/functions";
 import { verifyToken } from "../lib/verifyToken";
-import { TransactionModel } from "../lib/models";
 import { connectDB } from "../lib/connectDB";
-import { TRANSACTION_PATCH_KEYS } from "../../shared/types/transaction";
-import type { TransactionPatch } from "../../shared/types/transaction";
+import { AccountModel, TransactionModel } from "../lib/models";
+import { ACCOUNT_PATCH_KEYS } from "../../shared/types/account";
+import type { AccountPatch } from "../../shared/types/account";
 
 export const handler: Handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -21,73 +21,63 @@ export const handler: Handler = async (event, context) => {
 
     switch (event.httpMethod) {
       case "GET": {
-        const { accountID } = event.queryStringParameters || {};
-
         const query: Record<string, string> = { userID };
-        if (accountID) query.accountID = accountID;
-
-        const transactions = await TransactionModel.find(query);
-        return jsonResponse(200, transactions);
+        const accounts = await AccountModel.find(query);
+        return jsonResponse(200, accounts);
       }
 
       case "POST": {
-        const { accountID, amount, description, date, location } = JSON.parse(
-          event.body || "{}",
-        );
-        if (!accountID || amount === undefined)
+        const { name, type } = JSON.parse(event.body || "{}");
+
+        if (!name || !type)
           return jsonResponse(400, { error: "Missing required fields" });
 
-        const newTransaction = await TransactionModel.create({
-          userID,
-          accountID,
-          amount,
-          description,
-          date,
-          location,
+        const newAccount = await AccountModel.create({
+          name,
+          type,
         });
-        return jsonResponse(201, newTransaction);
+        return jsonResponse(201, newAccount);
       }
 
       case "DELETE": {
         const { id } = event.queryStringParameters || {};
+        if (!id) return jsonResponse(400, { error: "Account ID is required" });
 
-        if (!id)
-          return jsonResponse(400, { error: "Transaction ID is required" });
+        const account = await AccountModel.findOne({ _id: id, userID });
+        if (!account) return jsonResponse(404, { error: "Account not found" });
 
-        const transaction = await TransactionModel.findOne({ _id: id, userID });
+        await Promise.all([
+          AccountModel.deleteOne({ _id: id }),
+          TransactionModel.deleteMany({ accountID: id }),
+        ]);
 
-        if (!transaction)
-          return jsonResponse(404, { error: "Transaction not found" });
-
-        await TransactionModel.deleteOne({ _id: id });
-        return jsonResponse(200, { message: "Transaction deleted" });
+        return jsonResponse(200, {
+          message: "Account and transactions deleted",
+        });
       }
 
       case "PATCH": {
         const { id } = event.queryStringParameters || {};
-
-        if (!id)
-          return jsonResponse(400, { error: "Transaction ID is required" });
+        if (!id) return jsonResponse(400, { error: "Account ID is required" });
 
         const body = JSON.parse(event.body || "{}");
 
         const updates = Object.fromEntries(
           Object.entries(body).filter(([key]) =>
-            TRANSACTION_PATCH_KEYS.includes(key as keyof TransactionPatch),
+            ACCOUNT_PATCH_KEYS.includes(key as keyof AccountPatch),
           ),
         );
 
         if (Object.keys(updates).length === 0)
           return jsonResponse(400, { error: "No valid fields provided" });
 
-        const updated = await TransactionModel.findOneAndUpdate(
+        const updated = await AccountModel.findOneAndUpdate(
           { _id: id, userID },
           { $set: updates },
           { returnDocument: "after" },
         );
 
-        if (!updated)
-          return jsonResponse(400, { error: "Transaction not found" });
+        if (!updated) return jsonResponse(400, { error: "Account not found" });
 
         return jsonResponse(200, updated);
       }
