@@ -13,21 +13,32 @@ import type {
   NewTransaction,
   TransactionPatch,
 } from "../../shared/types/transaction";
+import { useAccounts } from "../context/AccountsContext";
 
-export const useTransactions = (accountID?: string): UseTransactions => {
+export const useTransactions = (): UseTransactions => {
   const { getAccessTokenSilently } = useAuth0();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [trigger, setTrigger] = useState(0);
   const { localSettings } = useLocalSettings();
+  const { selectedAccountID } = useAccounts();
 
   useEffect(() => {
+    if (!selectedAccountID) {
+      setIsLoading(false);
+      setError(null);
+      setTransactions([]);
+      return;
+    }
     const load = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await fetchTransactions(getAccessTokenSilently, accountID);
+        const data = await fetchTransactions(
+          getAccessTokenSilently,
+          selectedAccountID,
+        );
         setTransactions(data);
       } catch (err: any) {
         setError(err.message);
@@ -37,7 +48,7 @@ export const useTransactions = (accountID?: string): UseTransactions => {
     };
 
     load();
-  }, [accountID, trigger]);
+  }, [selectedAccountID, trigger]);
 
   const sortedTransactions = useMemo(() => {
     return [...transactions].sort((a, b) => {
@@ -53,9 +64,18 @@ export const useTransactions = (accountID?: string): UseTransactions => {
       switch (localSettings.sortField) {
         case "amount":
           return (a.amount - b.amount) * dir;
-        case "description":
         case "location":
-          return a.description.localeCompare(b.description) * dir;
+          if (!a.location || !b.location)
+            if (!a.location && b.location) return -1;
+            else if (a.location && !b.location) return 1;
+            else return 0;
+          else return a.location.localeCompare(b.location) * dir;
+        case "description":
+          if (!a.description || !b.description)
+            if (!a.description && b.description) return -1;
+            else if (a.description && !b.description) return 1;
+            else return 0;
+          else return a.description.localeCompare(b.description) * dir;
         case "date":
         default:
           return (

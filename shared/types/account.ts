@@ -25,13 +25,14 @@ export interface AccountsProps {
   error: string | null;
 }
 
-export interface UseAccounts {
+export interface AccountsContext {
   accounts: Account[];
+  selectedAccountID: string | undefined;
+  selectedAccount: Account | undefined;
   isLoading: boolean;
   error: string | null;
-  selectedAccountID: string | null;
+  selectAccount: (id: string | undefined) => void;
   addAccount: (data: NewAccount) => Promise<void>;
-  removeAccount: (id: string) => Promise<void>;
   editAccount: (id: string, updates: AccountPatch) => Promise<void>;
-  selectAccount: (id: string | null) => void;
+  removeAccount: (id: string) => Promise<void>;
 }
