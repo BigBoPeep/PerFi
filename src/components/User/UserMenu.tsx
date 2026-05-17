@@ -49,8 +49,8 @@ export default function UserMenu(): React.ReactNode {
   return (
     <div
       className={`relative flex items-center gap-2 p-2 bg-black/10
-        min-w-45 max-w-[200px] w-fit h-fit cursor-pointer
-        ${menuOpen ? "rounded-t-md" : "rounded-md"}`}
+        min-w-45 max-w-[200px] w-fit h-fit cursor-pointer transform-gpu
+        ${menuOpen ? "rounded-t-md z-1" : "rounded-md"}`}
       onClick={isAuthenticated ? () => setMenuOpen(!menuOpen) : undefined}
       ref={menuRef}
     >

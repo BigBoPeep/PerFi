@@ -52,15 +52,17 @@ export const AccountsProvider = ({ children }: { children: ReactNode }) => {
     load();
   }, [isAuthenticated, load]);
 
-  const addAccount = async (data: NewAccount) => {
+  const addAccount = async (data: NewAccount): Promise<Account> => {
     const account = await createAccount(getAccessTokenSilently, data);
     await load();
     setSelectedAccountID(account._id);
+    return account;
   };
 
   const editAccount = async (id: string, updates: AccountPatch) => {
-    await updateAccount(getAccessTokenSilently, id, updates);
+    const updated = await updateAccount(getAccessTokenSilently, id, updates);
     await load();
+    return updated;
   };
 
   const removeAccount = async (id: string) => {
@@ -92,8 +94,7 @@ export const AccountsProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAccounts = () => {
   const context = useContext(AccountsContext);
-  if (!context) {
+  if (!context)
     throw new Error("useAccounts must be used within an AccountsProvider");
-  }
   return context;
 };

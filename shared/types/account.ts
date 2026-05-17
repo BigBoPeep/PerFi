@@ -32,7 +32,7 @@ export interface AccountsContext {
   isLoading: boolean;
   error: string | null;
   selectAccount: (id: string | undefined) => void;
-  addAccount: (data: NewAccount) => Promise<void>;
-  editAccount: (id: string, updates: AccountPatch) => Promise<void>;
+  addAccount: (data: NewAccount) => Promise<Account>;
+  editAccount: (id: string, updates: AccountPatch) => Promise<Account>;
   removeAccount: (id: string) => Promise<void>;
 }

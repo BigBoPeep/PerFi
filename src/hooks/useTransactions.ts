@@ -92,10 +92,11 @@ export const useTransactions = (): UseTransactions => {
 
   const refetch = () => setTrigger((t) => t + 1);
 
-  const addTransaction = async (data: NewTransaction) => {
+  const addTransaction = async (data: NewTransaction): Promise<Transaction> => {
     try {
-      await createTransaction(getAccessTokenSilently, data);
+      const added = await createTransaction(getAccessTokenSilently, data);
       refetch();
+      return added;
     } catch (err: any) {
       throw err;
     }
@@ -110,10 +111,18 @@ export const useTransactions = (): UseTransactions => {
     }
   };
 
-  const updateTransaction = async (id: string, updates: TransactionPatch) => {
+  const updateTransaction = async (
+    id: string,
+    updates: TransactionPatch,
+  ): Promise<Transaction> => {
     try {
-      await updateTransactionApi(getAccessTokenSilently, id, updates);
+      const updated = await updateTransactionApi(
+        getAccessTokenSilently,
+        id,
+        updates,
+      );
       refetch();
+      return updated;
     } catch (err: any) {
       throw err;
     }

@@ -1,9 +1,13 @@
 import type { GetTokenSilentlyOptions } from "@auth0/auth0-react";
 import type {
+  Transaction,
   NewTransaction,
   TransactionPatch,
 } from "../../shared/types/transaction";
-import type { UserSettingsPatch } from "../../shared/types/settings";
+import type {
+  UserSettings,
+  UserSettingsPatch,
+} from "../../shared/types/settings";
 import type {
   Account,
   NewAccount,
@@ -41,14 +45,14 @@ export const fetchTransactions = async (
 export const createTransaction = async (
   getToken: GetToken,
   data: NewTransaction,
-) => {
+): Promise<Transaction> => {
   const res = await fetch(`${BASE_URL}/transactions`, {
     method: "POST",
     headers: await buildHeaders(getToken),
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to create transaction");
-  return res.json();
+  return res.json() as Promise<Transaction>;
 };
 
 export const deleteTransaction = async (getToken: GetToken, id: string) => {
@@ -64,36 +68,38 @@ export const updateTransaction = async (
   getToken: GetToken,
   id: string,
   updates: TransactionPatch,
-) => {
+): Promise<Transaction> => {
   const res = await fetch(`${BASE_URL}/transactions?id=${id}`, {
     method: "PATCH",
     headers: await buildHeaders(getToken),
     body: JSON.stringify(updates),
   });
   if (!res.ok) throw new Error("Failed to update transaction");
-  return res.json();
+  return res.json() as Promise<Transaction>;
 };
 
-export const fetchUserSettings = async (getToken: GetToken) => {
+export const fetchUserSettings = async (
+  getToken: GetToken,
+): Promise<UserSettings> => {
   const res = await fetch(`${BASE_URL}/userSettings`, {
     headers: await buildHeaders(getToken),
   });
   if (!res.ok) throw new Error("Failed to fetch settings");
-  return res.json();
+  return res.json() as Promise<UserSettings>;
 };
 
 export const updateUserSettings = async (
   getToken: GetToken,
   id: string,
   updates: UserSettingsPatch,
-) => {
+): Promise<UserSettings> => {
   const res = await fetch(`${BASE_URL}/userSettings?id=${id}`, {
     method: "PATCH",
     headers: await buildHeaders(getToken),
     body: JSON.stringify(updates),
   });
   if (!res.ok) throw new Error("Failed to update settings");
-  return res.json();
+  return res.json() as Promise<UserSettings>;
 };
 
 export const fetchAccounts = async (getToken: GetToken) => {

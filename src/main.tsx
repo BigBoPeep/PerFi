@@ -12,6 +12,7 @@ import MainLayout from "./components/layouts/MainLayout";
 import Dashboard from "./components/Dashboard";
 import { ConfirmModalProvider } from "./context/ConfirmModalContext";
 import { AccountsProvider } from "./context/AccountsContext";
+import { ToastProvider } from "./context/ToastContext";
 
 const Auth0ProviderWithNavigate = ({
   children,
@@ -41,24 +42,26 @@ const Auth0ProviderWithNavigate = ({
 };
 
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <Auth0ProviderWithNavigate>
-      <SettingsProvider>
-        <LocalSettingsProvider>
-          <AccountsProvider>
-            <ConfirmModalProvider>
-              <Routes>
-                <Route element={<MainLayout />}>
-                  <Route index element={<Home />} />
-                  <Route element={<RouteUser />}>
-                    <Route path="dashboard" element={<Dashboard />} />
+  <ToastProvider>
+    <BrowserRouter>
+      <Auth0ProviderWithNavigate>
+        <SettingsProvider>
+          <LocalSettingsProvider>
+            <AccountsProvider>
+              <ConfirmModalProvider>
+                <Routes>
+                  <Route element={<MainLayout />}>
+                    <Route index element={<Home />} />
+                    <Route element={<RouteUser />}>
+                      <Route path="dashboard" element={<Dashboard />} />
+                    </Route>
                   </Route>
-                </Route>
-              </Routes>
-            </ConfirmModalProvider>
-          </AccountsProvider>
-        </LocalSettingsProvider>
-      </SettingsProvider>
-    </Auth0ProviderWithNavigate>
-  </BrowserRouter>,
+                </Routes>
+              </ConfirmModalProvider>
+            </AccountsProvider>
+          </LocalSettingsProvider>
+        </SettingsProvider>
+      </Auth0ProviderWithNavigate>
+    </BrowserRouter>
+  </ToastProvider>,
 );

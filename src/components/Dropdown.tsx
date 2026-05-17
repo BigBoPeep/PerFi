@@ -12,6 +12,7 @@ interface DropdownProps {
   selected: string;
   onChange?: (value: string) => void;
   className?: string;
+  disabled?: boolean;
 }
 
 const sharedTransition = "duration-300 ease-out";
@@ -21,6 +22,7 @@ export default function Dropdown({
   selected,
   onChange,
   className = "",
+  disabled,
 }: DropdownProps): React.ReactNode {
   const [open, setOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -42,12 +44,15 @@ export default function Dropdown({
 
   return (
     <div
-      className={`relative bg-amber-200 transition-all transform-gpu
-        cursor-pointer
+      className={`relative transition-all transform-gpu cursor-pointer
+        outline-1
         ${open ? "rounded-t-md" : "rounded-md"} ${sharedTransition}
+        ${disabled ? "opacity-30" : ""}
         ${className}`}
       ref={dropRef}
-      onClick={() => setOpen(!open)}
+      onClick={() => {
+        if (!disabled) setOpen(!open);
+      }}
     >
       <div className="flex justify-between px-1 py-0.5">
         <p className="grow text-ellipsis">{selectedLabel}</p>

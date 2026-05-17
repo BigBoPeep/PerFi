@@ -3,6 +3,7 @@ import { verifyToken } from "../lib/verifyToken";
 import { TransactionModel } from "../lib/models";
 import { connectDB } from "../lib/connectDB";
 import { TRANSACTION_PATCH_KEYS } from "../../shared/types/transaction";
+import { sanitizeString } from "../lib/sanitize";
 import type { TransactionPatch } from "../../shared/types/transaction";
 
 export const handler: Handler = async (event, context) => {
@@ -34,16 +35,28 @@ export const handler: Handler = async (event, context) => {
         const { accountID, amount, description, date, location } = JSON.parse(
           event.body || "{}",
         );
-        if (!accountID || amount === undefined)
+
+        if (!accountID || amount === undefined || amount === null)
           return jsonResponse(400, { error: "Missing required fields" });
+
+        if (typeof amount !== "number" || !isFinite(amount))
+          return jsonResponse(400, { error: "Amount must be a valid number" });
+
+        if (amount === 0)
+          return jsonResponse(400, { error: "Amount cannot be zero" });
+
+        const sanitizedAmt = Math.round(amount * 100) / 100;
+        const sanitizedDesc = sanitizeString(description, 500);
+        const sanitizedLoc = sanitizeString(location, 200);
+        const sanitizedDate = sanitizeString(date, 50);
 
         const newTransaction = await TransactionModel.create({
           userID,
           accountID,
-          amount,
-          description,
-          date,
-          location,
+          amount: sanitizedAmt,
+          description: sanitizedDesc,
+          date: sanitizedDate,
+          location: sanitizedLoc,
         });
         return jsonResponse(201, newTransaction);
       }
@@ -79,6 +92,10 @@ export const handler: Handler = async (event, context) => {
 
         if (Object.keys(updates).length === 0)
           return jsonResponse(400, { error: "No valid fields provided" });
+
+        // ---------------------------------------------------------------------------
+        // FINISH ADDING VALIDATION
+        // ---------------------------------------------------------------------------
 
         const updated = await TransactionModel.findOneAndUpdate(
           { _id: id, userID },

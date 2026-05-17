@@ -4,10 +4,10 @@ import UserMenu from "../User/UserMenu";
 
 export default function MainLayout({}) {
   return (
-    <div className="w-dvw h-dvh overflow-hidden">
+    <div className="w-dvw h-dvh overflow-hidden bg-[var(--color-pri)]">
       <div
         className="max-h-[100px] min-h-fit h-[15dvh] flex items-center justify-between
-          p-2 bg-black/10"
+          p-2 bg-[var(--color-sec)]"
       >
         <div>PerFi</div>
 

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useTransactions } from "../hooks/useTransactions";
 import { useSettings } from "../context/SettingsContext";
 import { formatCurrency } from "../modules/currency";
-import Transactions from "./Transactions";
-import TransactionControls from "./TransactionControls";
+import Transactions from "./Transaction/Transactions";
+import TransactionControls from "./Transaction/TransactionControls";
 
 export default function Dashboard() {
   const [selectedAccountID, setSelectedAccountID] = useState<
@@ -16,13 +16,11 @@ export default function Dashboard() {
     error,
     addTransaction,
     deleteTransaction,
-  } = useTransactions(selectedAccountID);
+  } = useTransactions();
   const { settings } = useSettings();
 
   return (
     <div>
-      Dashboard
-      <TransactionControls />
       <Transactions
         transactions={transactions}
         isLoading={isLoading}
