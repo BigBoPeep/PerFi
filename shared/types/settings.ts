@@ -23,7 +23,7 @@ export interface SettingsContext {
   error: string | null;
   updateSettings: (
     id: string,
-    updates: Partial<UserSettings>,
+    updates: UserSettingsPatch,
   ) => Promise<UserSettings>;
 }
 

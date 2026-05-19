@@ -1,4 +1,7 @@
-import type { Transaction } from "../../../shared/types/transaction";
+import type {
+  Transaction,
+  TransactionPatch,
+} from "../../../shared/types/transaction";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -13,12 +16,23 @@ interface TransactionsProps {
   transactions: Transaction[];
   isLoading: boolean;
   error: string | null;
+  editMode: boolean;
+  updateTransaction: (
+    id: string,
+    updates: TransactionPatch,
+  ) => Promise<Transaction>;
+  selectTransaction: (id: string, selected: boolean) => void;
+  selectedTransactionIDs: Set<string>;
 }
 
 export default function Transactions({
   transactions,
   isLoading,
   error,
+  editMode,
+  updateTransaction,
+  selectedTransactionIDs,
+  selectTransaction,
 }: TransactionsProps): ReactNode {
   const {
     modalState,
@@ -29,12 +43,6 @@ export default function Transactions({
     handleTransitionEnd,
     updateModalData,
   } = useTransactionModal();
-  const { updateTransaction, deleteTransaction, addTransaction } =
-    useTransactions();
-  const [editMode, setEditMode] = useState(false);
-  const [selectedTransactionIDs, setSelectedTransactionIDs] = useState<
-    Set<string>
-  >(new Set());
 
   if (isLoading)
     return (
@@ -56,23 +64,15 @@ export default function Transactions({
     ) : (
       <ul>
         {transactions.map((trans) => (
-          <li key={trans._id}>
-            {editMode && (
-              <Checkbox
-                checked={selectedTransactionIDs.has(trans._id)}
-                onClick={(newValue) => {
-                  if (newValue)
-                    setSelectedTransactionIDs(
-                      new Set([...selectedTransactionIDs, trans._id]),
-                    );
-                  else {
-                    const newSet = selectedTransactionIDs;
-                    newSet.delete(trans._id);
-                    setSelectedTransactionIDs(new Set(newSet));
-                  }
-                }}
-              />
-            )}
+          <li key={trans._id} className="flex">
+            <div className="w-6 h-6">
+              {editMode && (
+                <Checkbox
+                  checked={selectedTransactionIDs.has(trans._id)}
+                  onClick={(newValue) => selectTransaction(trans._id, newValue)}
+                />
+              )}
+            </div>
             <TransactionRow
               transaction={trans}
               onView={() => openModal(trans, "view")}
@@ -84,13 +84,6 @@ export default function Transactions({
 
   return (
     <div>
-      <TransactionControls
-        onToggleEdit={(newEditMode) => setEditMode(newEditMode)}
-        disabled={transactions.length === 0}
-        onDelete={() => {}}
-        addTransaction={addTransaction}
-      />
-
       {tList}
 
       {modalState &&

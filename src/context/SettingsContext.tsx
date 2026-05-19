@@ -54,8 +54,10 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
           updates,
         );
         setSettings(data);
+        return data;
       } catch (err: any) {
         setError(err.message);
+        return settings as UserSettings;
       }
     },
     [getAccessTokenSilently],

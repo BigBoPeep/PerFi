@@ -3,6 +3,7 @@ import { verifyToken } from "../lib/verifyToken";
 import { connectDB } from "../lib/connectDB";
 import { AccountModel, TransactionModel } from "../lib/models";
 import { ACCOUNT_PATCH_KEYS } from "../../shared/types/account";
+import { sanitizeString } from "../lib/sanitize";
 import type { AccountPatch } from "../../shared/types/account";
 
 export const handler: Handler = async (event, context) => {
@@ -29,12 +30,25 @@ export const handler: Handler = async (event, context) => {
       case "POST": {
         const { name, type } = JSON.parse(event.body || "{}");
 
-        if (!name || !type)
+        const sanitizedName = sanitizeString(name, 100);
+        const sanitizedType = sanitizeString(type, 100);
+
+        if (!sanitizedName || !sanitizedType)
           return jsonResponse(400, { error: "Missing required fields" });
 
+        if (sanitizedName.length < 3)
+          return jsonResponse(400, {
+            error: "Account Name must be at least 3 characters",
+          });
+        if (sanitizedType.length < 3)
+          return jsonResponse(400, {
+            error: "Account Type must be at least 3 characters",
+          });
+
         const newAccount = await AccountModel.create({
-          name,
-          type,
+          userID,
+          name: sanitizedName,
+          type: sanitizedType,
         });
         return jsonResponse(201, newAccount);
       }
@@ -60,13 +74,23 @@ export const handler: Handler = async (event, context) => {
         const { id } = event.queryStringParameters || {};
         if (!id) return jsonResponse(400, { error: "Account ID is required" });
 
-        const body = JSON.parse(event.body || "{}");
+        const updates = JSON.parse(event.body || "{}");
+        const setFields: Record<string, unknown> = {};
 
-        const updates = Object.fromEntries(
-          Object.entries(body).filter(([key]) =>
-            ACCOUNT_PATCH_KEYS.includes(key as keyof AccountPatch),
-          ),
-        );
+        for (const [key, value] of Object.entries(updates)) {
+          if (ACCOUNT_PATCH_KEYS.includes(key as keyof AccountPatch)) {
+            setFields[key] = sanitizeString(value as string, 100);
+          }
+        }
+
+        if (typeof setFields.name === "string" && setFields.name.length < 3)
+          return jsonResponse(400, {
+            error: "Account Name must be at least 3 characters.",
+          });
+        if (typeof setFields.type === "string" && setFields.type.length < 3)
+          return jsonResponse(400, {
+            error: "Account Type must be at least 3 characters.",
+          });
 
         if (Object.keys(updates).length === 0)
           return jsonResponse(400, { error: "No valid fields provided" });

@@ -3,7 +3,7 @@ import { verifyToken } from "../lib/verifyToken";
 import { TransactionModel } from "../lib/models";
 import { connectDB } from "../lib/connectDB";
 import { TRANSACTION_PATCH_KEYS } from "../../shared/types/transaction";
-import { sanitizeString } from "../lib/sanitize";
+import { sanitizeString, sanitizeCurrencyAmount } from "../lib/sanitize";
 import type { TransactionPatch } from "../../shared/types/transaction";
 
 export const handler: Handler = async (event, context) => {
@@ -39,24 +39,19 @@ export const handler: Handler = async (event, context) => {
         if (!accountID || amount === undefined || amount === null)
           return jsonResponse(400, { error: "Missing required fields" });
 
-        if (typeof amount !== "number" || !isFinite(amount))
-          return jsonResponse(400, { error: "Amount must be a valid number" });
-
-        if (amount === 0)
-          return jsonResponse(400, { error: "Amount cannot be zero" });
-
-        const sanitizedAmt = Math.round(amount * 100) / 100;
-        const sanitizedDesc = sanitizeString(description, 500);
-        const sanitizedLoc = sanitizeString(location, 200);
-        const sanitizedDate = sanitizeString(date, 50);
+        const safeAmt = sanitizeCurrencyAmount(amount);
+        if (!safeAmt)
+          return jsonResponse(400, {
+            error: "Amount invalid. Must be a non-zero number.",
+          });
 
         const newTransaction = await TransactionModel.create({
           userID,
           accountID,
-          amount: sanitizedAmt,
-          description: sanitizedDesc,
-          date: sanitizedDate,
-          location: sanitizedLoc,
+          amount: safeAmt,
+          description: sanitizeString(description, 500),
+          date: sanitizeString(date, 50),
+          location: sanitizeString(location, 200),
         });
         return jsonResponse(201, newTransaction);
       }
@@ -82,29 +77,37 @@ export const handler: Handler = async (event, context) => {
         if (!id)
           return jsonResponse(400, { error: "Transaction ID is required" });
 
-        const body = JSON.parse(event.body || "{}");
+        const updates = JSON.parse(event.body || "{}");
+        const setFields: Record<string, unknown> = {};
 
-        const updates = Object.fromEntries(
-          Object.entries(body).filter(([key]) =>
-            TRANSACTION_PATCH_KEYS.includes(key as keyof TransactionPatch),
-          ),
-        );
+        if (updates.amount !== undefined) {
+          const safeAmt = sanitizeCurrencyAmount(updates.amount);
+          if (safeAmt === null)
+            return jsonResponse(400, {
+              error: "Amount invalid. Must be a non-zero number.",
+            });
+          setFields.amount = safeAmt;
+        }
 
-        if (Object.keys(updates).length === 0)
-          return jsonResponse(400, { error: "No valid fields provided" });
+        for (const [key, value] of Object.entries(updates)) {
+          if (key === "amount" || value === undefined) continue;
+          if (TRANSACTION_PATCH_KEYS.includes(key as keyof TransactionPatch)) {
+            const max = key === "location" ? 100 : key === "date" ? 24 : 500;
+            setFields[key] = sanitizeString(value as string, max);
+          }
+        }
 
-        // ---------------------------------------------------------------------------
-        // FINISH ADDING VALIDATION
-        // ---------------------------------------------------------------------------
+        if (Object.keys(setFields).length === 0)
+          return jsonResponse(400, { error: "No valid fields provided." });
 
         const updated = await TransactionModel.findOneAndUpdate(
           { _id: id, userID },
-          { $set: updates },
+          { $set: setFields },
           { returnDocument: "after" },
         );
 
         if (!updated)
-          return jsonResponse(400, { error: "Transaction not found" });
+          return jsonResponse(404, { error: "Transaction not found" });
 
         return jsonResponse(200, updated);
       }

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { SquareRoundCorner, X } from "lucide-react";
+import { Square, X } from "lucide-react";
 
 interface CheckboxProps {
   checked: boolean;
@@ -13,10 +13,12 @@ export default function Checkbox({
   onClick,
 }: CheckboxProps): ReactNode {
   return (
-    <div onClick={() => onClick(!checked)}>
+    <div className="" onClick={() => onClick(!checked)}>
       <div className="relative">
-        <SquareRoundCorner className="absolute inset-0" />
-        <X className={`absolute inset-0 ${checked ? "" : ""}`} />
+        <Square className="absolute inset-0" />
+        <X
+          className={`absolute inset-0 ${checked ? "opacity-100" : "opacity-0"}`}
+        />
       </div>
       {label && <div>{label}</div>}
     </div>

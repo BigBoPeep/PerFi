@@ -9,10 +9,12 @@ export type DropdownOpt = {
 
 interface DropdownProps {
   opts: DropdownOpt[];
-  selected: string;
+  selected?: string | undefined;
   onChange?: (value: string) => void;
   className?: string;
   disabled?: boolean;
+  emptyListMsg?: string;
+  emptySelectionMsg?: string;
 }
 
 const sharedTransition = "duration-300 ease-out";
@@ -23,12 +25,16 @@ export default function Dropdown({
   onChange,
   className = "",
   disabled,
+  emptyListMsg,
+  emptySelectionMsg = "",
 }: DropdownProps): React.ReactNode {
   const [open, setOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
   const selectedLabel =
-    opts.find((opt) => opt.value === selected)?.label ?? selected;
+    opts.find((opt) => opt.value === selected)?.label ??
+    selected ??
+    emptySelectionMsg;
 
   useEffect(() => {
     if (!open) return;
@@ -45,8 +51,8 @@ export default function Dropdown({
   return (
     <div
       className={`relative transition-all transform-gpu cursor-pointer
-        outline-1
-        ${open ? "rounded-t-md" : "rounded-md"} ${sharedTransition}
+        outline-1 bg-[var(--color-pri)]
+        ${open ? "rounded-t-md z-50" : "rounded-md"} ${sharedTransition}
         ${disabled ? "opacity-30" : ""}
         ${className}`}
       ref={dropRef}
@@ -61,22 +67,28 @@ export default function Dropdown({
 
       <ul
         className={`absolute overflow-hidden origin-top transition-transform
-          bg-inherit w-full rounded-b-md
-          ${open ? "scale-y-100" : "scale-y-0 scale-x-95"} ${sharedTransition}`}
+          bg-inherit w-full rounded-b-md outline
+          ${open ? "scale-y-100 z-50" : "scale-y-0 scale-x-95"} ${sharedTransition}`}
       >
-        {opts.map((opt) => (
-          <li
-            className={`py-0.5 px-1 hover:bg-gray-500/20 ${open ? "z-50" : ""}`}
-            key={opt.value}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onChange) onChange(opt.value);
-              setOpen(false);
-            }}
-          >
-            {opt.label}
+        {opts.length > 0 ? (
+          opts.map((opt) => (
+            <li
+              className={`py-0.5 px-1 hover:bg-gray-500/20`}
+              key={opt.value}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onChange) onChange(opt.value);
+                setOpen(false);
+              }}
+            >
+              {opt.label}
+            </li>
+          ))
+        ) : (
+          <li className="py-0.5 px-1">
+            {emptyListMsg ?? "This list is empty..."}
           </li>
-        ))}
+        )}
       </ul>
     </div>
   );

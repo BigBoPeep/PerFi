@@ -5,7 +5,6 @@ import type {
   Transaction,
 } from "../../../shared/types/transaction";
 import type { ReactNode } from "react";
-import type { TransactionModalMode } from "../../hooks/useTransactionModal";
 import {
   ListPlus,
   PencilLine,
@@ -42,7 +41,8 @@ export default function TransactionControls({
   const { localSettings, updateLocalSettings } = useLocalSettings();
   const { selectedAccount } = useAccounts();
   const [editMode, setEditMode] = useState(false);
-  const [addOpen, setAddOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const inpLocation = useRef<HTMLInputElement>(null);
   const inpDescription = useRef<HTMLTextAreaElement>(null);
@@ -54,8 +54,21 @@ export default function TransactionControls({
     onToggleEdit(editMode);
   }, [editMode]);
 
+  useEffect(() => {
+    if (!formOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (formRef.current && !formRef.current.contains(e.target as Node)) {
+        setFormOpen(false);
+        handleReset();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [formOpen]);
+
   const handleReset = () => {
-    if (inpAmount.current) inpAmount.current.value = "0";
+    if (inpAmount.current) inpAmount.current.value = "";
     if (inpDate.current) inpDate.current.value = "";
     if (inpDescription.current) inpDescription.current.value = "";
     if (inpLocation.current) inpLocation.current.value = "";
@@ -83,7 +96,7 @@ export default function TransactionControls({
         location: inpLocation.current?.value.trim(),
       });
       handleReset();
-      setAddOpen(false);
+      setFormOpen(false);
     } catch (err: any) {
       addToast(err.msg ?? err.message ?? err);
     } finally {
@@ -93,8 +106,9 @@ export default function TransactionControls({
 
   return (
     <div
-      className="relative p-3 bg-[var(--color-sec)] w-full max-w-prose place-self-center
-        rounded-sm my-2"
+      className={`relative p-3 bg-[var(--color-sec)] w-full max-w-prose place-self-center
+        my-2 transition-all transform-gpu duration-300 ease-in
+        ${formOpen ? "rounded-t-md" : "rounded-md"}`}
     >
       {editMode ? (
         <div className="flex justify-evenly">
@@ -109,11 +123,12 @@ export default function TransactionControls({
         <div className="flex gap-2">
           <button
             onClick={() => {
-              setAddOpen(!addOpen);
+              setFormOpen(!formOpen);
               handleReset();
             }}
+            disabled={!selectedAccount}
           >
-            {addOpen ? <SquareX /> : <ListPlus />}
+            {formOpen ? <SquareX /> : <ListPlus />}
           </button>
           <button
             onClick={() => {
@@ -150,9 +165,10 @@ export default function TransactionControls({
 
       <div
         className={`absolute bg-inherit p-2 grid grid-rows-3 grid-cols-2 gap-2
-          w-full origin-top left-0 top-full
+          w-full origin-top left-0 top-full rounded-b-md
           transition-transform duration-300 ease-in
-          ${addOpen ? "scale-100" : "scale-y-0"}`}
+          ${formOpen ? "scale-100" : "scale-y-0"}`}
+        ref={formRef}
       >
         <div className="row-start-1 row-span-2 flex flex-col justify-between">
           <input
@@ -183,6 +199,7 @@ export default function TransactionControls({
             name="amount"
             id="amount"
             placeholder="Amount"
+            defaultValue={""}
             ref={inpAmount}
           />
           <div className="grow flex justify-evenly items-center">

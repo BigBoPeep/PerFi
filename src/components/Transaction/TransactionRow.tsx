@@ -15,16 +15,16 @@ export default function TransactionRow({
 }: TransactionRowProps): ReactNode {
   const { settings } = useSettings();
   return (
-    <div>
-      <span>
+    <div className="grow grid grid-cols-[max-content,auto,auto,max-content] place-content-between gap-2">
+      <span className="col-start-1">
         {format(
           transaction.date,
           settings ? settings.dateFormat : "MM/dd/yyyy HH:mm",
         )}
       </span>
-      <span>{transaction.description}</span>
-      <span>{transaction.location}</span>
-      <span>
+      <span className="col-start-2">{transaction.description}</span>
+      <span className="col-start-3">{transaction.location}</span>
+      <span className="col-start-4">
         {formatCurrency(
           transaction.amount,
           settings ? settings.currency : "USD",

@@ -111,6 +111,7 @@ export const fetchAccounts = async (getToken: GetToken) => {
 };
 
 export const createAccount = async (getToken: GetToken, data: NewAccount) => {
+  console.log(data);
   const res = await fetch(`${BASE_URL}/accounts`, {
     method: "POST",
     headers: await buildHeaders(getToken),
