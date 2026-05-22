@@ -23,6 +23,7 @@ const userSettingsSchema = new mongoose.Schema(
     userID: { type: String, required: true, unique: true },
     dateFormat: { type: String, default: "MM/dd/yyyy" },
     currency: { type: String, default: "USD" },
+    timeFormat: { type: String, default: "HH:mm" },
   },
   { timestamps: true },
 );

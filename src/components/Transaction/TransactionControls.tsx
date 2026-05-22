@@ -7,8 +7,7 @@ import type {
 import type { ReactNode } from "react";
 import {
   ListPlus,
-  PencilLine,
-  PencilOff,
+  Ban,
   Trash2,
   SquareX,
   CheckLine,
@@ -27,7 +26,7 @@ import LoadingSpinner from "../LoadingSpinner";
 
 export interface TransactionControlsProps {
   disabled?: boolean;
-  onToggleEdit: (editMode: boolean) => void;
+  onToggleEdit: (selectMode: boolean) => void;
   onDelete: () => void;
   addTransaction: (data: NewTransaction) => Promise<Transaction>;
 }
@@ -40,7 +39,7 @@ export default function TransactionControls({
 }: TransactionControlsProps): ReactNode {
   const { localSettings, updateLocalSettings } = useLocalSettings();
   const { selectedAccount } = useAccounts();
-  const [editMode, setEditMode] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -51,8 +50,8 @@ export default function TransactionControls({
   const { addToast } = useToast();
 
   useEffect(() => {
-    onToggleEdit(editMode);
-  }, [editMode]);
+    onToggleEdit(selectMode);
+  }, [selectMode]);
 
   useEffect(() => {
     if (!formOpen) return;
@@ -110,10 +109,10 @@ export default function TransactionControls({
         my-2 transition-all transform-gpu duration-300 ease-in
         ${formOpen ? "rounded-t-md" : "rounded-md"}`}
     >
-      {editMode ? (
+      {selectMode ? (
         <div className="flex justify-evenly">
-          <button onClick={() => setEditMode(false)}>
-            <PencilOff />
+          <button onClick={() => setSelectMode(false)}>
+            <Ban />
           </button>
           <button onClick={onDelete} disabled={disabled}>
             <Trash2 />
@@ -132,11 +131,11 @@ export default function TransactionControls({
           </button>
           <button
             onClick={() => {
-              setEditMode(!editMode);
+              setSelectMode(!selectMode);
             }}
-            disabled={disabled}
+            disabled={disabled || formOpen}
           >
-            <PencilLine />
+            <Trash2 />
           </button>
           <Dropdown
             className="w-full"
@@ -147,7 +146,7 @@ export default function TransactionControls({
                 sortField: value as LocalSettings["sortField"],
               })
             }
-            disabled={disabled}
+            disabled={disabled || formOpen}
           />
           <Dropdown
             className="w-full"
@@ -158,7 +157,7 @@ export default function TransactionControls({
                 sortOrder: value as LocalSettings["sortOrder"],
               })
             }
-            disabled={disabled}
+            disabled={disabled || formOpen}
           />
         </div>
       )}

@@ -13,7 +13,13 @@ export default function Checkbox({
   onClick,
 }: CheckboxProps): ReactNode {
   return (
-    <div className="" onClick={() => onClick(!checked)}>
+    <div
+      className=""
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(!checked);
+      }}
+    >
       <div className="relative">
         <Square className="absolute inset-0" />
         <X

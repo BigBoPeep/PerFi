@@ -3,36 +3,34 @@ import type {
   TransactionPatch,
 } from "../../../shared/types/transaction";
 import type { ReactNode } from "react";
-import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useTransactionModal } from "../../hooks/useTransactionModal";
-import { useTransactions } from "../../hooks/useTransactions";
 import TransactionRow from "./TransactionRow";
 import TransactionModal from "./TransactionModal";
-import TransactionControls from "./TransactionControls";
-import Checkbox from "../Checkbox";
 
 interface TransactionsProps {
   transactions: Transaction[];
   isLoading: boolean;
   error: string | null;
-  editMode: boolean;
+  selectMode: boolean;
   updateTransaction: (
     id: string,
     updates: TransactionPatch,
   ) => Promise<Transaction>;
   selectTransaction: (id: string, selected: boolean) => void;
   selectedTransactionIDs: Set<string>;
+  className?: string;
 }
 
 export default function Transactions({
   transactions,
   isLoading,
   error,
-  editMode,
+  selectMode,
   updateTransaction,
   selectedTransactionIDs,
   selectTransaction,
+  className = "",
 }: TransactionsProps): ReactNode {
   const {
     modalState,
@@ -44,47 +42,47 @@ export default function Transactions({
     updateModalData,
   } = useTransactionModal();
 
-  if (isLoading)
-    return (
-      <div>
-        <>Loading...</>
-      </div>
-    );
-
-  if (error)
-    return (
-      <div>
-        <>Error: {error}</>
-      </div>
-    );
-
   const tList =
     transactions.length === 0 ? (
       <div>No transactions yet...</div>
     ) : (
-      <ul>
+      <ul className="grid grid-cols-[max-content,1fr,1fr,max-content] gap-1">
+        <li
+          className="grid grid-cols-subgrid col-start-1 col-span-4
+            *:w-full *:text-center"
+        >
+          <span className="col-start-1">Date</span>
+          <span className="col-start-2">Desc</span>
+          <span className="col-start-3">Location</span>
+          <span className="col-start-4">Amount</span>
+        </li>
         {transactions.map((trans) => (
-          <li key={trans._id} className="flex">
-            <div className="w-6 h-6">
-              {editMode && (
-                <Checkbox
-                  checked={selectedTransactionIDs.has(trans._id)}
-                  onClick={(newValue) => selectTransaction(trans._id, newValue)}
-                />
-              )}
-            </div>
+          <li
+            key={trans._id}
+            className="col-start-1 col-span-4 grid grid-cols-subgrid"
+          >
             <TransactionRow
+              className="col-start-1 col-span-4 grid grid-cols-subgrid"
               transaction={trans}
               onView={() => openModal(trans, "view")}
+              selectMode={selectMode}
+              selected={selectedTransactionIDs.has(trans._id)}
+              onSelectChange={(newValue) =>
+                selectTransaction(trans._id, newValue)
+              }
             />
           </li>
         ))}
       </ul>
     );
 
+  const content = isLoading ? "Loading..." : error ? error : tList;
+
   return (
-    <div>
-      {tList}
+    <div
+      className={`w-full max-w-7xl place-self-center flex flex-col ${className}`}
+    >
+      {content}
 
       {modalState &&
         createPortal(

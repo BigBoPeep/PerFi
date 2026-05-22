@@ -10,7 +10,6 @@ import {
   SquareX,
   SquarePlus,
   PencilLine,
-  PencilOff,
 } from "lucide-react";
 
 interface AccountControlsProps {
@@ -35,8 +34,6 @@ export default function AccountControls({
   const formRef = useRef<HTMLDivElement>(null);
   const inpName = useRef<HTMLInputElement>(null);
   const inpType = useRef<HTMLInputElement>(null);
-
-  console.log("render");
 
   useEffect(() => {
     if (!formOpen) {
@@ -103,8 +100,14 @@ export default function AccountControls({
   };
 
   const handleReset = () => {
-    if (inpName.current) inpName.current.value = "";
-    if (inpType.current) inpType.current.value = "";
+    if (inpName.current && inpType.current)
+      if (formEditMode) {
+        inpName.current.value = selectedAccount?.name ?? "";
+        inpType.current.value = selectedAccount?.type ?? "";
+      } else {
+        inpName.current.value = "";
+        inpType.current.value = "";
+      }
   };
 
   return (
@@ -115,7 +118,7 @@ export default function AccountControls({
     >
       <button
         onClick={() => {
-          if (formOpen) handleReset();
+          if (!formOpen) handleReset();
           setFormOpen(!formOpen);
         }}
       >

@@ -26,7 +26,7 @@
   --text-5: clamp(2.67rem, 3.44vi + 1.98rem, 4.73rem);
   --default-font-family: "Nunito Sans", var(--font-sans);
 
-  --color-pri: var(--color-red-100);
-  --color-sec: var(--color-rose-200);
+  --color-pri: var(--color-lime-50);
+  --color-sec: var(--color-emerald-500);
   --color-brand: var(--color-orange-600);
 }

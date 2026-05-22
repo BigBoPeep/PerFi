@@ -85,10 +85,10 @@ export const useTransactions = (): UseTransactions => {
     });
   }, [transactions, localSettings.sortField, localSettings.sortOrder]);
 
-  const balance = useMemo(
-    () => transactions.reduce((sum, t) => sum + t.amount, 0),
-    [transactions],
-  );
+  const balance = useMemo(() => {
+    if (isLoading) return 0.0;
+    else return transactions.reduce((sum, t) => sum + t.amount, 0);
+  }, [transactions, isLoading]);
 
   const refetch = () => setTrigger((t) => t + 1);
 

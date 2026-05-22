@@ -6,6 +6,7 @@ import type {
 import { useAccounts } from "../../context/AccountsContext";
 import { useRef } from "react";
 import { SquareX, Save } from "lucide-react";
+import { format } from "date-fns";
 
 interface TransactionEditProps {
   transaction: Transaction;
@@ -30,27 +31,27 @@ export default function TransactionEdit({
       <input
         type="datetime-local"
         name="date"
-        id="date"
+        id="modalDate"
         ref={dateInput}
-        defaultValue={transaction.date}
+        defaultValue={format(transaction.date, "yyyy-MM-dd'T'HH:mm:ss")}
       />
       <input
         type="text"
         name="location"
-        id="location"
+        id="modalLocation"
         ref={locationInput}
         defaultValue={transaction.location ?? ""}
       />
       <textarea
         name="description"
-        id="description"
+        id="modalDescription"
         ref={descriptionInput}
         defaultValue={transaction.description ?? ""}
       />
       <input
         type="number"
-        name=""
-        id=""
+        name="amount"
+        id="modalAmount"
         step={0.01}
         ref={amountInput}
         defaultValue={transaction.amount}

@@ -2,6 +2,7 @@ export interface UserSettings {
   _id: string;
   userID: string;
   dateFormat: string;
+  timeFormat: string;
   currency: string;
   createdAt: string;
   updatedAt: string;
@@ -10,11 +11,13 @@ export interface UserSettings {
 export interface UserSettingsPatch {
   dateFormat?: string;
   currency?: string;
+  timeFormat?: string;
 }
 
 export const USER_SETTINGS_PATCH_KEYS: (keyof UserSettingsPatch)[] = [
   "dateFormat",
   "currency",
+  "timeFormat",
 ];
 
 export interface SettingsContext {

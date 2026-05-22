@@ -12,6 +12,19 @@ export const LOCAL_SETTINGS_DEFAULTS: LocalSettings = {
 export const DATE_FORMAT_OPTS = [
   { label: "01/31/2025", value: "MM/dd/yyyy" },
   { label: "31/01/2025", value: "dd/MM/yyyy" },
+  { label: "2025/01/31", value: "yyyy/MM/dd" },
+  { label: "2025/31/01", value: "yyyy/dd/MM" },
+  { label: "Mo 01/31/2025", value: "eeeeee MM/dd/yyyy" },
+  { label: "Mo 31/01/2025", value: "eeeeee dd/MM/yyyy" },
+  { label: "Mo 2025/01/31", value: "eeeeee yyyy/MM/dd" },
+  { label: "Mo 2025/31/01", value: "eeeeee yyyy/dd/MM" },
+] as const;
+
+export const TIME_FORMAT_OPTS = [
+  { label: "23:15", value: "HH:mm" },
+  { label: "11:15pm", value: "hh:mmaaa" },
+  { label: "11:15 PM", value: "hh:mm aa" },
+  { label: "11:15p", value: "hh:mmaaaaa" },
 ] as const;
 
 export const CURRENCY_OPTS = [
@@ -22,6 +35,7 @@ export const CURRENCY_OPTS = [
 
 export type DateFormat = (typeof DATE_FORMAT_OPTS)[number]["value"];
 export type Currency = (typeof CURRENCY_OPTS)[number]["value"];
+export type TimeFormat = (typeof TIME_FORMAT_OPTS)[number]["value"];
 
 export const TRANSACTION_SORT_FIELD_OPTS: DropdownOpt[] = [
   { label: "Date", value: "date" },
