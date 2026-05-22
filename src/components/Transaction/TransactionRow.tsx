@@ -8,7 +8,6 @@ import Checkbox from "../Checkbox";
 interface TransactionRowProps {
   className?: string;
   transaction: Transaction;
-  onView: () => void;
   selectMode: boolean;
   selected: boolean;
   onSelectChange: (newValue: boolean) => void;
@@ -16,7 +15,6 @@ interface TransactionRowProps {
 
 export default function TransactionRow({
   transaction,
-  onView,
   selectMode,
   selected,
   onSelectChange,
@@ -30,23 +28,25 @@ export default function TransactionRow({
 
   return (
     <div
-      className={`cursor-pointer *:not-last:text-center *:even:bg-black/10 *:px-1 
-        hover:bg-black/10 ${className}`}
-      onClick={onView}
+      className={`*:not-last:text-center *:even:bg-black/10 *:px-1 
+        ${className}`}
     >
-      <div className="col-start-1 flex justify-center">
-        <div className="h-6 w-6">
-          {selectMode && (
-            <Checkbox
-              checked={selected}
-              onClick={(newValue) => onSelectChange(newValue)}
-            />
-          )}
-        </div>
+      <div className="col-start-1 flex justify-center whitespace-nowrap">
+        {selectMode && (
+          <Checkbox
+            className="w-6 h-6"
+            checked={selected}
+            onClick={(newValue) => onSelectChange(newValue)}
+          />
+        )}
         {format(transaction.date, datetimeFormat)}
       </div>
-      <div className="col-start-2 line-clamp-1">{transaction.description}</div>
-      <div className="col-start-3 line-clamp-1">{transaction.location}</div>
+      <div className="col-start-2 line-clamp-1 text-ellipsis">
+        {transaction.description}
+      </div>
+      <div className="col-start-3 line-clamp-1 text-ellipsis">
+        {transaction.location}
+      </div>
       <div className="col-start-4 w-full text-right">
         {formatCurrency(
           transaction.amount,

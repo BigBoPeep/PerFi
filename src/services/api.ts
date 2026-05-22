@@ -64,6 +64,20 @@ export const deleteTransaction = async (getToken: GetToken, id: string) => {
   return res.json();
 };
 
+export const deleteTransactions = async (
+  getToken: GetToken,
+  ids: Array<string>,
+) => {
+  const params = new URLSearchParams();
+  ids.forEach((id) => params.append("ids", id));
+  const res = await fetch(`${BASE_URL}/transactions?${params.toString()}`, {
+    method: "DELETE",
+    headers: await buildHeaders(getToken),
+  });
+  if (!res.ok) throw new Error("Failed to delete transactions");
+  return res.json();
+};
+
 export const updateTransaction = async (
   getToken: GetToken,
   id: string,

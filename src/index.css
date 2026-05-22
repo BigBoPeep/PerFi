@@ -1,13 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 @import "tailwindcss";
 
+#root {
+  height: 100dvh;
+  width: 100dvw;
+}
+
 @layer base {
   :root {
     @apply text-0;
   }
 
   button {
-    @apply px-2 py-0.5 rounded-md outline cursor-pointer disabled:opacity-30;
+    @apply px-2 py-0.5 rounded-md outline cursor-pointer disabled:opacity-30
+      bg-[var(--color-brand)];
   }
 
   input,
@@ -24,9 +30,15 @@
   --text-3: clamp(1.71rem, 1.59vi + 1.39rem, 2.66rem);
   --text-4: clamp(2.14rem, 2.36vi + 1.66rem, 3.55rem);
   --text-5: clamp(2.67rem, 3.44vi + 1.98rem, 4.73rem);
-  --default-font-family: "Nunito Sans", var(--font-sans);
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
   --color-pri: var(--color-lime-50);
   --color-sec: var(--color-emerald-500);
-  --color-brand: var(--color-orange-600);
+  --color-brand: var(--color-green-200);
 }

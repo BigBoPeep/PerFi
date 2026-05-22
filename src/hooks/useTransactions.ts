@@ -5,15 +5,29 @@ import {
   createTransaction,
   deleteTransaction as deleteTransactionApi,
   updateTransaction as updateTransactionApi,
+  deleteTransactions as deleteTransactionsApi,
 } from "../services/api";
 import { useLocalSettings } from "../context/LocalSettingsContext";
 import type {
   Transaction,
-  UseTransactions,
   NewTransaction,
   TransactionPatch,
 } from "../../shared/types/transaction";
 import { useAccounts } from "../context/AccountsContext";
+
+export interface UseTransactions {
+  transactions: Transaction[];
+  isLoading: boolean;
+  error: string | null;
+  balance: number;
+  addTransaction: (data: NewTransaction) => Promise<Transaction>;
+  deleteTransaction: (id: string) => Promise<void>;
+  deleteTransactions: (ids: Array<string>) => Promise<void>;
+  updateTransaction: (
+    id: string,
+    updates: TransactionPatch,
+  ) => Promise<Transaction>;
+}
 
 export const useTransactions = (): UseTransactions => {
   const { getAccessTokenSilently } = useAuth0();
@@ -111,6 +125,15 @@ export const useTransactions = (): UseTransactions => {
     }
   };
 
+  const deleteTransactions = async (ids: Array<string>) => {
+    try {
+      await deleteTransactionsApi(getAccessTokenSilently, ids);
+      refetch();
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
   const updateTransaction = async (
     id: string,
     updates: TransactionPatch,
@@ -135,6 +158,7 @@ export const useTransactions = (): UseTransactions => {
     error,
     addTransaction,
     deleteTransaction,
+    deleteTransactions,
     updateTransaction,
   };
 };

@@ -106,7 +106,7 @@ export default function TransactionControls({
   return (
     <div
       className={`relative p-3 bg-[var(--color-sec)] w-full max-w-prose place-self-center
-        my-2 transition-all transform-gpu duration-300 ease-in
+        my-2 transition-all transform-gpu duration-300 ease-in shadow-md z-1
         ${formOpen ? "rounded-t-md" : "rounded-md"}`}
     >
       {selectMode ? (

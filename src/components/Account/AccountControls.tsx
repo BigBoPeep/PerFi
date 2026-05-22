@@ -113,7 +113,7 @@ export default function AccountControls({
   return (
     <div
       className={`relative w-full max-w-prose place-self-center mt-2 bg-[var(--color-sec)] 
-        p-2 flex gap-2 z-1 transition-all transform-gpu duration-300 ease-in
+        p-3 flex gap-2 transition-all transform-gpu duration-300 ease-in shadow-md z-2
         ${formOpen ? "rounded-t-md" : "rounded-md"} ${className}`}
     >
       <button

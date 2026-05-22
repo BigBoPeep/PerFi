@@ -46,10 +46,10 @@ export default function Transactions({
     transactions.length === 0 ? (
       <div>No transactions yet...</div>
     ) : (
-      <ul className="grid grid-cols-[max-content,1fr,1fr,max-content] gap-1">
+      <ul className="grid grid-cols-[max-content,1fr,1fr,max-content] gap-1 min-h-0">
         <li
           className="grid grid-cols-subgrid col-start-1 col-span-4
-            *:w-full *:text-center"
+            *:w-full *:text-center sticky top-0 bg-[var(--color-pri)]"
         >
           <span className="col-start-1">Date</span>
           <span className="col-start-2">Desc</span>
@@ -59,12 +59,19 @@ export default function Transactions({
         {transactions.map((trans) => (
           <li
             key={trans._id}
-            className="col-start-1 col-span-4 grid grid-cols-subgrid"
+            className="col-start-1 col-span-4 grid grid-cols-subgrid hover:bg-black/10
+              py-1 cursor-pointer"
+            onClick={() => {
+              if (selectMode)
+                if (selectedTransactionIDs.has(trans._id))
+                  selectTransaction(trans._id, false);
+                else selectTransaction(trans._id, true);
+              else openModal(trans, "view");
+            }}
           >
             <TransactionRow
               className="col-start-1 col-span-4 grid grid-cols-subgrid"
               transaction={trans}
-              onView={() => openModal(trans, "view")}
               selectMode={selectMode}
               selected={selectedTransactionIDs.has(trans._id)}
               onSelectChange={(newValue) =>
@@ -80,7 +87,7 @@ export default function Transactions({
 
   return (
     <div
-      className={`w-full max-w-7xl place-self-center flex flex-col ${className}`}
+      className={`w-full max-w-7xl place-self-center flex flex-col min-h-0 overflow-y-auto ${className}`}
     >
       {content}
 

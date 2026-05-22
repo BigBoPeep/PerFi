@@ -49,8 +49,8 @@ export default function UserMenu(): React.ReactNode {
   return (
     <div
       className={`relative flex items-center gap-2 p-2 bg-black/10
-        min-w-45 max-w-[200px] w-fit h-fit cursor-pointer transform-gpu
-        ${menuOpen ? "rounded-t-md z-1" : "rounded-md"}`}
+        min-w-45 max-w-md w-fit h-fit cursor-pointer transform-gpu
+        ${menuOpen ? "rounded-t-md z-50" : "rounded-md"}`}
       onClick={isAuthenticated ? () => setMenuOpen(!menuOpen) : undefined}
       ref={menuRef}
     >
@@ -60,7 +60,7 @@ export default function UserMenu(): React.ReactNode {
         className="shrink-0"
       />
 
-      <div className="grow text-center text-1">
+      <div className="grow text-center text-1 line-clamp-2">
         {isLoading && "Checking..."}
         {!isLoading &&
           isAuthenticated &&
@@ -81,20 +81,24 @@ export default function UserMenu(): React.ReactNode {
 
       {isAuthenticated && (
         <div
-          className={`absolute origin-top-right overflow-hidden bg-amber-600
+          className={`absolute origin-top-right overflow-hidden bg-[var(--color-sec)]
             left-0 top-full w-full flex flex-col gap-2 items-center py-2
-            rounded-b-md cursor-default
+            rounded-b-md cursor-default shadow-md
             ${menuOpen ? "scale-y-100" : "scale-y-0"}
             `}
         >
-          <ul>
+          <ul className="*:not-first:mt-2">
             {USER_MENU_LIST_OPTS.map((opt) => (
-              <li key={opt.label} className="text-1">
+              <li
+                key={opt.label}
+                className="text-1 hover:bg-black/10 px-2 rounded-md"
+              >
                 <MenuLink opt={opt} />
               </li>
             ))}
           </ul>
           <button
+            className="text-1"
             onClick={(e) => {
               e.stopPropagation();
               logout();

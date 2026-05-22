@@ -29,16 +29,3 @@ export const TRANSACTION_PATCH_KEYS: (keyof TransactionPatch)[] = [
   "description",
   "location",
 ];
-
-export interface UseTransactions {
-  transactions: Transaction[];
-  isLoading: boolean;
-  error: string | null;
-  balance: number;
-  addTransaction: (data: NewTransaction) => Promise<Transaction>;
-  deleteTransaction: (id: string) => Promise<void>;
-  updateTransaction: (
-    id: string,
-    updates: TransactionPatch,
-  ) => Promise<Transaction>;
-}

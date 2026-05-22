@@ -14,7 +14,7 @@ export default function Dashboard() {
     isLoading: isTransactionsLoading,
     error,
     addTransaction,
-    deleteTransaction,
+    deleteTransactions,
     updateTransaction,
   } = useTransactions();
   const { selectedAccount, isLoading: isAccountsLoading } = useAccounts();
@@ -25,7 +25,7 @@ export default function Dashboard() {
   >(new Set());
 
   return (
-    <div className="flex flex-col grow">
+    <div className="flex flex-col h-full">
       <AccountControls />
       {selectedAccount && (
         <>
@@ -55,11 +55,11 @@ export default function Dashboard() {
           />
           <div
             className="w-full max-w-prose place-self-center text-1
-            bg-[var(--color-sec)] rounded-t-md p-1 mt-2"
+            bg-[var(--color-sec)] rounded-t-md p-1 mt-2 shadow-md inset-shadow-sm"
           >
             <div
               className="bg-[var(--color-pri)] px-2 py-1 rounded-md w-fit
-                place-self-end"
+                place-self-end shadow-md inset-shadow-sm"
             >
               {formatCurrency(balance, settings?.currency ?? "USD")}
             </div>

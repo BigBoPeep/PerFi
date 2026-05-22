@@ -17,7 +17,9 @@ export default function MainLayout({}) {
         <UserMenu />
       </div>
 
-      <Outlet />
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <Outlet />
+      </div>
     </div>
   );
 }
